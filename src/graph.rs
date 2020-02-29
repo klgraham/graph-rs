@@ -1,5 +1,6 @@
 
 use std::collections::HashMap;
+use std::fmt::{Display, Result, Formatter};
 
 
 // Adjacency list graph
@@ -50,6 +51,12 @@ impl Vertex {
     }
 }
 
+impl Display for Vertex {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "Vertex(id: {})", self.id)
+    }
+}
+
 impl Graph {
     pub fn new(is_directed: bool) -> Graph {
         Graph {
@@ -90,6 +97,29 @@ impl Graph {
         if !self.is_directed {
             self.edges[to].push(from);
         }
+    }
+}
+
+impl Display for Graph {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        let mut graph = String::new();
+        if self.is_directed {
+            graph.push_str("DirectedGraph(");
+        } else {
+            graph.push_str("UndirectedGraph(");
+        }
+
+        for v in &self.vertices {
+            let mut s = format!("{} => [", v.id);
+
+            for n in self.get_adjacent_vertices(v.id).unwrap() {
+                s.push_str(format!("{}, ", n).as_str())
+            }
+            s.push_str("],\n");
+            graph.push_str(s.as_str());
+        }
+        graph.push(')');
+        write!(f, "{}", graph)
     }
 }
 
