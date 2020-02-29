@@ -25,7 +25,7 @@ struct Vertex {
 struct Graph {
     pub is_directed: bool,
     pub vertices: Vec<Vertex>,
-    pub edges: Vec<Vec<usize>>
+    pub adjacent: Vec<Vec<usize>>
 }
 
 impl Vertex {
@@ -62,7 +62,7 @@ impl Graph {
         Graph {
             is_directed,
             vertices: vec![],
-            edges: vec![]
+            adjacent: vec![]
         }
     }
 
@@ -71,7 +71,7 @@ impl Graph {
     }
 
     pub fn num_edges(&self) -> usize {
-        self.edges.iter().map(|v| v.len()).sum()
+        self.adjacent.iter().map(|v| v.len()).sum()
     }
 
     pub fn get_vertex(&self, id: usize) -> Option<&Vertex> {
@@ -79,7 +79,7 @@ impl Graph {
     }
 
     pub fn get_adjacent_vertices(&self, id: usize) -> Option<&Vec<usize>> {
-        self.edges.get(id)
+        self.adjacent.get(id)
     }
 
     pub fn add_vertex(&mut self) -> usize {
@@ -87,15 +87,15 @@ impl Graph {
         let v = Vertex::new(n);
         self.vertices.push(v);
         // add empty adjacency list
-        self.edges.push(Vec::new());
+        self.adjacent.push(Vec::new());
         return n
     }
 
     pub fn add_edge(&mut self, from: usize, to:usize) {
-        self.edges[from].push(to);
+        self.adjacent[from].push(to);
 
         if !self.is_directed {
-            self.edges[to].push(from);
+            self.adjacent[to].push(from);
         }
     }
 }
@@ -141,7 +141,7 @@ mod tests {
         let v = g.get_vertex(id).unwrap();
         assert_eq!(g.num_vertices(), 1);
         assert_eq!(id, v.id);
-        assert!(g.edges[id].is_empty());
+        assert!(g.adjacent[id].is_empty());
     }
 
     #[test]
@@ -153,8 +153,8 @@ mod tests {
         assert_eq!(undirected.num_vertices(), 2);
         assert_eq!(undirected.num_edges(), 2);
         assert_eq!(undirected.get_vertex(v2).unwrap().id, v2);
-        assert_eq!(undirected.edges[v1][0], v2);
-        assert_eq!(undirected.edges[v2][0], v1);
+        assert_eq!(undirected.adjacent[v1][0], v2);
+        assert_eq!(undirected.adjacent[v2][0], v1);
     }
 
     #[test]
@@ -166,7 +166,7 @@ mod tests {
         assert_eq!(directed.num_vertices(), 2);
         assert_eq!(directed.num_edges(), 1);
         assert_eq!(directed.get_vertex(v2).unwrap().id, v2);
-        assert_eq!(directed.edges[v1][0], v2);
-        assert!(directed.edges[v2].is_empty());
+        assert_eq!(directed.adjacent[v1][0], v2);
+        assert!(directed.adjacent[v2].is_empty());
     }
 }
